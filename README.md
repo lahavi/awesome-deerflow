@@ -1,7 +1,5 @@
 # Awesome DeerFlow
 
-> A curated list of resources, guides, and tools for building with DeerFlow – ByteDance’s open‑source SuperAgent harness for deep research and multi‑agent workflows.
-
 DeerFlow turns long‑horizon tasks into orchestrated agent swarms that can research, code, analyze data, and ship polished artifacts like reports, slide decks, and web pages. It’s model‑agnostic, runs locally or in the cloud, and is built on a modern LangGraph / LangChain stack so you can plug it into your own infra and data.
 
 This Awesome list collects the sharpest docs, deep dives, tutorials, and experiments so you can go from “what is DeerFlow?” to production‑grade agent workflows without reinventing the graph.
