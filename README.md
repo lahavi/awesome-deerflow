@@ -2,13 +2,15 @@
 
 **DeerFlow** (Deep **E**xploration + **E**fficient **R**esearch **F**low) is ByteDance's open‑source, long‑horizon **SuperAgent harness**. A single lead agent decomposes complex goals and orchestrates **sub‑agents, skills, tools, a sandbox, long‑term memory, and a message gateway** to research, code, analyze data, and ship polished artifacts — reports, slide decks, web pages, images, and video. It's model‑agnostic, runs locally or in the cloud, and is built on **LangGraph** so you can plug it into your own infra and data.
 
-DeerFlow **2.0** (open‑sourced Feb 2026) is a ground‑up rewrite that shares no code with v1 — the fixed five‑node graph is gone, replaced by a single primary agent plus a composable skills/sub‑agent system.
+DeerFlow **2.0** (open‑sourced **February 28, 2026**) is a ground‑up rewrite that shares no code with v1 — the fixed five‑node graph is gone, replaced by a single primary agent plus a composable skills/sub‑agent system. It hit **#1 on GitHub Trending within 24 hours** and has since grown past **66,000+ stars**.
 
 This Awesome list collects the sharpest docs, deep dives, tutorials, and experiments so you can go from "what is DeerFlow?" to production‑grade agent workflows without reinventing the graph.
 
 ---
 
 ## What's New in 2.0
+
+Launched **February 28, 2026**, DeerFlow 2.0 hit **#1 on GitHub Trending within 24 hours** and has since crossed **66,000+ stars** — all as a ground-up rewrite sharing no code with v1.
 
 The biggest deltas since v1 — what to look for as you read the resources below:
 
@@ -18,10 +20,11 @@ The biggest deltas since v1 — what to look for as you read the resources below
 - **Sandbox & filesystem** — isolated code execution via `AioSandboxProvider`, `LocalSandboxProvider`, or a **Kubernetes** provider for scaled deployments.
 - **Long‑term memory & context engineering** — persistent memory plus summarization and tool‑call recovery to keep long‑horizon runs coherent.
 - **Embedded Python client (`DeerFlowClient`) + Terminal Workbench (TUI)** — drive DeerFlow directly, no HTTP/Gateway needed.
-- **InfoQuest** — ByteDance's search/crawl toolset for web research.
+- **Multi‑modal web research** — ByteDance's **InfoQuest** search/crawl toolset, plus pluggable connectors for **Tavily**, **DuckDuckGo**, **Brave Search**, and **Arxiv** for academic and general web research.
 - **Claude Code integration** — the `claude‑to‑deerflow` skill drives a running DeerFlow instance from the terminal.
 - **IM channels** — Telegram, Slack, Feishu/Lark, WeChat, WeCom, and DingTalk.
-- **Tracing** — LangSmith and Langfuse.
+- **Tracing & observability** — **LangSmith**, **Langfuse**, and **Monocle** (an OpenTelemetry‑based tracer purpose‑built for agentic apps that records each run end‑to‑end — LLM calls, agent steps, and all).
+- **Scheduled tasks & session goals** — a first‑class scheduled‑task MVP in the workspace lets runs trigger on a schedule, and the `/goal` command pins a session goal so the agent keeps a long task moving instead of stopping at a single answer. Use `/compact` to manually trigger context compaction mid‑run.
 - **Ops** — one‑line agent setup, `make doctor`, `make support‑bundle`; recommended models: **Doubao‑Seed‑2.0‑Code**, **DeepSeek v3.2**, and **Kimi 2.5**.
 
 ---
@@ -89,10 +92,10 @@ How DeerFlow 2.0 actually thinks under the hood — the building blocks behind e
   Isolated code execution through pluggable providers — `AioSandboxProvider`, `LocalSandboxProvider`, or a **Kubernetes** provider for scaled deployments — with a working filesystem the agent can read and write.
 
 - **Long‑Term Memory & Context Engineering**  
-  Persistent memory across runs, plus summarization and tool‑call recovery so long‑horizon tasks stay coherent instead of degrading over many steps.
+  Persistent memory across runs, plus summarization and tool‑call recovery so long‑horizon tasks stay coherent instead of degrading over many steps. Use the `/goal` command to pin a session goal, and `/compact` to manually trigger context compaction when a run gets long.
 
-- **InfoQuest**  
-  ByteDance's bundled search/crawl toolset that powers DeerFlow's web research capabilities.
+- **InfoQuest & Multi‑Modal Search**  
+  ByteDance's bundled search/crawl toolset that powers DeerFlow's web research, complemented by pluggable connectors for **Tavily**, **DuckDuckGo**, **Brave Search**, and **Arxiv** (academic preprints). Mix providers per‑task to balance cost, privacy, and coverage.
 
 ---
 
@@ -139,6 +142,9 @@ Deep dives into how DeerFlow's agent model and orchestration work.
 - **Human‑in‑the‑Loop Research**  
   Deep dives into plan review, editable research trees, and how humans can redirect or refine the agent mid‑flight without losing context.
 
+- **Observability & Tracing (LangSmith / Langfuse / Monocle)**  
+  Patterns for instrumenting long‑horizon runs: LangSmith and Langfuse for trace capture, and **Monocle** — DeerFlow's OpenTelemetry‑based tracer — for end‑to‑end recording of LLM calls, agent steps, and tool invocations across a run.
+
 - **Create Your Own Deep Research Agent with DeerFlow – The Sequence Engineering**  
   Architecture‑level deep dive into DeerFlow's graph‑based orchestration, end‑to‑end research workflows, and multi‑modal outputs.  
   https://thesequence.substack.com/p/the-sequence-engineering-661-create
@@ -162,7 +168,7 @@ Deep dives into how DeerFlow's agent model and orchestration work.
 Ecosystem pieces that make DeerFlow plug into the rest of your stack.
 
 - **Embedded Python Client (`DeerFlowClient`) + Terminal Workbench (TUI)**  
-  Drive a running DeerFlow instance programmatically or from an interactive terminal UI — no HTTP/Gateway round‑trip required.
+  Drive a running DeerFlow instance programmatically or from an interactive terminal UI — no HTTP/Gateway round‑trip required. The TUI now also exposes the scheduled‑task workspace, session goals (`/goal`), and manual compaction (`/compact`).
 
 - **Claude Code Integration (`claude‑to‑deerflow` skill)**  
   Install the skill to send research tasks and check status against a running DeerFlow instance, directly from Claude Code in the terminal.  
@@ -175,7 +181,7 @@ Ecosystem pieces that make DeerFlow plug into the rest of your stack.
   Examples of wiring in Python execution, web scrapers, data sources, and MCP‑style servers for bespoke tools.
 
 - **Tracing & Observability**  
-  Built‑in support for **LangSmith** and **Langfuse** to log runs, capture traces, and instrument agent behavior for debugging and optimization.
+  Built‑in support for **LangSmith**, **Langfuse**, and **Monocle** — an OpenTelemetry‑based tracer for agentic applications that records each run end‑to‑end (LLM calls, agent steps, and tool invocations) for debugging and optimization.
 
 - **IM Channels**  
   Run DeerFlow over chat with adapters for Telegram, Slack, Feishu/Lark, WeChat, WeCom, and DingTalk.
@@ -193,6 +199,26 @@ Cool things people are building with — and writing about — DeerFlow.
 - **ByteDance DeerFlow 2.0: Docker of AI Workers – Medium**  
   Architectural framing of 2.0 as "Docker for AI workers," covering the Claude Code integration and the rewrite's design philosophy.  
   https://medium.com/data-science-in-your-pocket/bytedance-deerflow-2-0-docker-of-ai-workers-c866b4ff558f
+
+- **ByteDance's DeerFlow gives your agent a sandbox, memory, and subagents out of the box – Medium (Creative AI Ninja)**  
+  Deep dive on the three pillars — sandboxed execution, persistent memory, and sub‑agent orchestration — and why shipping them together is the real differentiator.  
+  https://medium.com/@creativeaininja/bytedances-deerflow-gives-your-agent-a-sandbox-memory-and-subagents-out-of-the-box-402c0be85329
+
+- **I Set Up ByteDance's DeerFlow 2.0 and Let It Run My Code – Medium (Synthetic Futures)**  
+  Hands‑on report from letting DeerFlow run code in a Docker sandbox, with a close look at the persistent memory that tracks preferences, writing style, and project context across sessions.  
+  https://medium.com/synthetic-futures/i-set-up-bytedances-deerflow-2-0-and-let-it-run-my-code-here-s-what-actually-happened-90bb201985ad
+
+- **DeerFlow 2.0 Is Cool — But Do You Know Your Stack? – cstack.ai**  
+  Where DeerFlow fits in a broader agent stack: how the SuperAgent harness model compares to adjacent tools and when to reach for it.  
+  https://cstack.ai/blog/deerflow-is-cool-but-do-you-know-your-stack
+
+- **How to Use ByteDance DeerFlow 2.0 in 2026 – apidog.com**  
+  Practical 2026 guide covering setup, core features, sandbox security, model configuration, and API lifecycle integration.  
+  https://apidog.com/blog/deer-flow-guide-2026/
+
+- **DeerFlow Tutorial – Open‑Source SuperAgent Harness – YouTube**  
+  Walkthrough of the skills system, sub‑agents, sandbox execution, long‑term memory, and multi‑model support.  
+  https://www.youtube.com/watch?v=mQn7QAs3cOM
 
 - **DeerFlow: ByteDance's Open‑Source SuperAgent – Termdock**  
   Practical walkthrough: architecture, setup, MCP integration, Claude Code bridging, and monitoring parallel sub‑agents.  
