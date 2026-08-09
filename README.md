@@ -22,9 +22,11 @@ The biggest deltas since v1 — what to look for as you read the resources below
 - **Embedded Python client (`DeerFlowClient`) + Terminal Workbench (TUI)** — drive DeerFlow directly, no HTTP/Gateway needed.
 - **Multi‑modal web research** — ByteDance's **InfoQuest** search/crawl toolset, plus pluggable connectors for **Tavily**, **DuckDuckGo**, **Brave Search**, and **Arxiv** for academic and general web research.
 - **Claude Code integration** — the `claude‑to‑deerflow` skill drives a running DeerFlow instance from the terminal.
-- **IM channels** — Telegram, Slack, Feishu/Lark, WeChat, WeCom, and DingTalk.
+- **IM channels** — Telegram, Slack, Discord, Feishu/Lark, WeChat, WeCom, and DingTalk, including **user‑owned connections** so logged‑in users can bind their own accounts.
 - **Tracing & observability** — **LangSmith**, **Langfuse**, and **Monocle** (an OpenTelemetry‑based tracer purpose‑built for agentic apps that records each run end‑to‑end — LLM calls, agent steps, and all).
 - **Scheduled tasks & session goals** — a first‑class scheduled‑task MVP in the workspace lets runs trigger on a schedule, and the `/goal` command pins a session goal so the agent keeps a long task moving instead of stopping at a single answer. Use `/compact` to manually trigger context compaction mid‑run.
+- **SkillScan safety scanner** — a native deterministic scanner that gates skill installs and agent‑edited skills before the LLM‑based scanner; disable via `skill_scan.enabled: false`.
+- **Sub‑agent token tracking** — collapsed sub‑agent cards stream the effective model and cumulative token usage, attributed back to the dispatching step.
 - **Ops** — one‑line agent setup, `make doctor`, `make support‑bundle`; recommended models: **Doubao‑Seed‑2.0‑Code**, **DeepSeek v3.2**, and **Kimi 2.5**.
 
 ---
@@ -76,6 +78,10 @@ Resources to go from zero to a working DeerFlow 2.0 instance on your own machine
   High‑level overview of DeerFlow, its deep research focus, and its multi‑agent architecture.  
   https://deerflow.tech
 
+- **DeerFlow 2.0 setup, deployment & practical overview – deerflow.one**  
+  Companion site with practical deployment notes and a deeper look at sub‑agent orchestration.  
+  https://deerflow.one/en
+
 ---
 
 ## Core Concepts
@@ -83,7 +89,7 @@ Resources to go from zero to a working DeerFlow 2.0 instance on your own machine
 How DeerFlow 2.0 actually thinks under the hood — the building blocks behind every flow below.
 
 - **Skills & Tools System**  
-  Skills are Markdown‑defined, progressively loaded capabilities activated via `/skill‑name` slashes. Built‑ins include research, report generation, slides, web pages, and image/video generation — and you can author your own.
+  Skills are Markdown‑defined, progressively loaded capabilities activated via `/skill‑name` slashes. Built‑ins include research, report generation, slides, web pages, and image/video generation — and you can author your own. Installs and agent‑edited skills run through **SkillScan**, a deterministic safety scanner that blocks high‑confidence critical findings before execution.
 
 - **Sub‑Agents**  
   The lead agent decomposes a goal and spawns domain‑specific sub‑agents that run in parallel, each with isolated context, then aggregates their outputs.
@@ -93,6 +99,9 @@ How DeerFlow 2.0 actually thinks under the hood — the building blocks behind e
 
 - **Long‑Term Memory & Context Engineering**  
   Persistent memory across runs, plus summarization and tool‑call recovery so long‑horizon tasks stay coherent instead of degrading over many steps. Use the `/goal` command to pin a session goal, and `/compact` to manually trigger context compaction when a run gets long.
+
+- **Session Goals & Scheduled Tasks**  
+  `/goal <completion condition>` pins a thread‑scoped success condition that persists across turns; scheduled tasks (`/workspace/scheduled-tasks`) run agents on time‑based, recurring, or deferred triggers.
 
 - **InfoQuest & Multi‑Modal Search**  
   ByteDance's bundled search/crawl toolset that powers DeerFlow's web research, complemented by pluggable connectors for **Tavily**, **DuckDuckGo**, **Brave Search**, and **Arxiv** (academic preprints). Mix providers per‑task to balance cost, privacy, and coverage.
@@ -184,7 +193,7 @@ Ecosystem pieces that make DeerFlow plug into the rest of your stack.
   Built‑in support for **LangSmith**, **Langfuse**, and **Monocle** — an OpenTelemetry‑based tracer for agentic applications that records each run end‑to‑end (LLM calls, agent steps, and tool invocations) for debugging and optimization.
 
 - **IM Channels**  
-  Run DeerFlow over chat with adapters for Telegram, Slack, Feishu/Lark, WeChat, WeCom, and DingTalk.
+  Run DeerFlow over chat with adapters for Telegram, Slack, Discord, Feishu/Lark, WeChat, WeCom, and DingTalk — including **user‑owned connections** so logged‑in users can bind their own accounts.
 
 - **DeerFlow GitHub – bytedance/deer‑flow**  
   Core repo with source, docs, examples, and configuration guides for the full SuperAgent harness.  
@@ -216,9 +225,21 @@ Cool things people are building with — and writing about — DeerFlow.
   Practical 2026 guide covering setup, core features, sandbox security, model configuration, and API lifecycle integration.  
   https://apidog.com/blog/deer-flow-guide-2026/
 
+- **DeerFlow 2.0: ByteDance's Open‑Source AI Agent Harness – Kiledjian**  
+  Early‑2026 analysis of DeerFlow as one of the most visible agent releases of the year and why it matters.  
+  https://kiledjian.com/2026/03/06/deerflow-bytedances-opensource-ai-agent.html
+
 - **DeerFlow Tutorial – Open‑Source SuperAgent Harness – YouTube**  
   Walkthrough of the skills system, sub‑agents, sandbox execution, long‑term memory, and multi‑model support.  
   https://www.youtube.com/watch?v=mQn7QAs3cOM
+
+- **YouTube – "DeerFlow 2.0: ByteDance's OpenClaw Rival"**  
+  Tutorial showing DeerFlow 2.0 features and how to install it both locally and in production.  
+  https://www.youtube.com/watch?v=Ju4hsnjYboM
+
+- **YouTube – "This Free AI Agent Does 10 Hours of Research in 10 Minutes"**  
+  Walkthrough of the multi‑agent framework for deep research, web search, data analysis, and asset generation.  
+  https://www.youtube.com/watch?v=R22HnnwN4U4
 
 - **DeerFlow: ByteDance's Open‑Source SuperAgent – Termdock**  
   Practical walkthrough: architecture, setup, MCP integration, Claude Code bridging, and monitoring parallel sub‑agents.  
