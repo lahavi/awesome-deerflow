@@ -2,38 +2,43 @@
 
 **DeerFlow** (Deep **E**xploration + **E**fficient **R**esearch **F**low) is ByteDance's open‑source, long‑horizon **SuperAgent harness**. A single lead agent decomposes complex goals and orchestrates **sub‑agents, skills, tools, a sandbox, long‑term memory, and a message gateway** to research, code, analyze data, and ship polished artifacts — reports, slide decks, web pages, images, and video. It's model‑agnostic, runs locally or in the cloud, and is built on **LangGraph** so you can plug it into your own infra and data.
 
-DeerFlow **2.0** (open‑sourced **February 28, 2026**) is a ground‑up rewrite that shares no code with v1 — the fixed five‑node graph is gone, replaced by a single primary agent plus a composable skills/sub‑agent system. It hit **#1 on GitHub Trending within 24 hours** and has since grown past **81,000+ stars**.
+DeerFlow **2.0** (open‑sourced **February 28, 2026**) is a ground‑up rewrite that shares no code with v1 — the fixed five‑node graph is gone, replaced by a single primary agent plus a composable skills/sub‑agent system. It hit **#1 on GitHub Trending within 24 hours** and has since grown past **83,000+ stars**.
 
 This Awesome list collects the sharpest docs, deep dives, tutorials, and experiments so you can go from "what is DeerFlow?" to production‑grade agent workflows without reinventing the graph.
 
 ---
 
-## What's New in 2.0
+## What's New in 2.x
 
-Launched **February 28, 2026**, DeerFlow 2.0 hit **#1 on GitHub Trending within 24 hours** and has since crossed **81,000+ stars** — all as a ground-up rewrite sharing no code with v1. The **v2.0.0 release** (tagged **June 25, 2026**) closed its milestone with **182 merged PRs from 40 contributors** — [official release notes here](https://github.com/bytedance/deer-flow/discussions/3795).
+Launched **February 28, 2026**, DeerFlow 2.0 hit **#1 on GitHub Trending within 24 hours** and has since crossed **83,000+ stars** — all as a ground-up rewrite sharing no code with v1. The **v2.0.0 release** (tagged **June 25, 2026**) closed its milestone with **182 merged PRs from 40 contributors** — [official release notes here](https://github.com/bytedance/deer-flow/discussions/3795).
+
+The **v2.1.0 release** (tagged **September 24, 2026**) landed the next major milestone — **772 merged PRs from 178 contributors**, focused on **trust, scale, and operability**: verifiable agent execution with tamper-evident tool-call receipts, durable SQL-backed batch subagent delegation, pluggable memory backends, new sandbox providers, OIDC/SSO enterprise auth, and a Projects workspace — [official release notes here](https://github.com/bytedance/deer-flow/releases/tag/v2.1.0).
 
 The biggest deltas since v1 — what to look for as you read the resources below:
 
 - **Ground‑up rewrite** — a single primary agent replaces v1's fixed five‑node graph; v2 shares no code with v1 (the original Deep Research framework lives on the `main‑1.x` branch).
 - **Skills & Tools** — Markdown‑defined skills with progressive loading and `/skill‑name` slash activation. Built‑ins cover research, report generation, slides, web pages, and image/video generation.
-- **Sub‑Agents** — the lead agent spawns parallel sub‑agents, each with isolated context (including an isolated checkpointer), for concurrent work. Collapsed sub‑agent cards stream the effective model and cumulative token usage in real time, attributed back to the dispatching step.
+- **Sub‑Agents** — the lead agent spawns parallel sub‑agents, each with isolated context (including an isolated checkpointer), for concurrent work. Collapsed sub‑agent cards stream the effective model and cumulative token usage in real time, attributed back to the dispatching step. Since 2.1, a **delegation ledger** prevents redundant fan-out, subagent step history persists, and the opt‑in `batch_task` tool runs durable, resumable SQL-backed batches with retries and pause/resume/cancel for large-scale delegation.
 - **Self‑updating custom agents** — agents can persist edits to their own `SOUL.md` / `config.yaml` from a normal chat, with per‑user isolation.
-- **Sandbox & filesystem** — isolated code execution via pluggable providers: **Local**, **Docker**, **E2B**, or a **Kubernetes** provisioner for scaled deployments — with a working per-task filesystem (uploads/workspace/outputs).
+- **Sandbox & filesystem** — isolated code execution via pluggable providers: **Local**, **Docker**, **E2B**, or a **Kubernetes** provisioner for scaled deployments — with a working per-task filesystem (uploads/workspace/outputs). v2.1.0 added **BoxLite** (warm-pool micro-VMs), **Tenki**, and **OpenSandbox** providers, opt-in domain-allowlist network egress control, and hardened containers (seccomp, dropped capabilities).
 - **Agentic browser control** — optional Playwright‑powered tools (navigate, snapshot, click, type, submit) keep a live per‑conversation browser session, with SSRF screening on navigation and private-address blocking.
-- **Long‑term memory & context engineering** — persistent memory plus summarization and tool‑call recovery to keep long‑horizon runs coherent. Recent additions: a **hybrid fact‑eviction policy** and manual compaction via `/compact`. Since April 2026, the opt‑in **TIAMAT cloud memory** backend adds cross‑device memory sync — a step toward enterprise‑scale deployments beyond a single machine.
+- **Long‑term memory & context engineering** — persistent memory plus summarization and tool‑call recovery to keep long‑horizon runs coherent. Recent additions: a **hybrid fact‑eviction policy** and manual compaction via `/compact`. Since April 2026, the opt‑in **TIAMAT cloud memory** backend adds cross‑device memory sync — a step toward enterprise‑scale deployments beyond a single machine. v2.1.0 made memory fully **pluggable** via `memory.manager_class`, with new **OpenViking**, **mem0**, and **Honcho** backends, an FTS5/BM25 retrieval adapter, and LLM‑assisted consolidation with staleness pruning.
+- **Verifiable agent execution (new in 2.1)** — tool calls carry tamper‑evident, runtime‑stamped receipts kept in a ledger inside the model context; subagent reports must cite them, deterministic parent‑side acceptance checks verify delegation outcomes, and undecidable checks are flagged **UNVERIFIED**.
+- **Enterprise auth & authorization** — v2.1.0 shipped **OIDC/SSO** (Keycloak-tested), **scoped personal access tokens**, SSO-only provisioning, and the **built‑in RBAC** that the July 2026 [pluggable authorization RFC](https://github.com/bytedance/deer-flow/blob/main/docs/plans/2026-07-10-pluggable-authorization-rfc.md) sketched — filtering denied tools before the model ever sees them.
 - **Managed integrations & the Lark/Feishu skill pack** — admins install shared, read‑only skill packs once; users connect via browser OAuth ("Connect Lark") with per‑user credential isolation (0700 dirs, symlink rejection) and SHA‑verified sandbox CLI binaries. A credential‑broker sidecar is on the roadmap to keep secrets out of sandboxes entirely.
 - **Extension manager** — install extensions from PyPI, Git, or local paths; extensions contribute middleware, lifecycle hooks, observers, services, and authenticated FastAPI routers.
-- **MCP hardening** — OAuth flows, tool‑call timeouts, **durable background tasks** with leases/retries, and **pluggable RBAC authorization** that filters denied tools before the model ever sees them (design detailed in the [pluggable authorization RFC](https://github.com/bytedance/deer-flow/blob/main/docs/plans/2026-07-10-pluggable-authorization-rfc.md), July 2026).
+- **MCP hardening** — OAuth flows, tool‑call timeouts, **durable background tasks** with leases/retries, and **pluggable RBAC authorization** that filters denied tools before the model ever sees them (design detailed in the [pluggable authorization RFC](https://github.com/bytedance/deer-flow/blob/main/docs/plans/2026-07-10-pluggable-authorization-rfc.md), July 2026). v2.1.0 pushed MCP toward production infrastructure: a durable task runtime that survives restarts, per-user credential injection, and Settings-managed servers.
 - **Embedded Python client (`DeerFlowClient`) + Terminal Workbench (TUI)** — drive DeerFlow directly, no HTTP/Gateway needed.
 - **Multi‑modal web research** — ByteDance's **InfoQuest** search/crawl toolset, plus pluggable connectors for **Tavily**, **DuckDuckGo**, **Brave Search**, **SearXNG**, **Serper** (Google Images), **Browserless**, and **Arxiv**.
-- **New models** — **StepFun** and **MiMo** reasoning models join the recommended set (**Doubao‑Seed‑2.0‑Code**, **DeepSeek v3.2**, **Kimi 2.5**); **MiniMax** covers image/video/podcast generation plus a **music‑generation skill**, and **MiniMax Code** recently landed as a native ACP agent. Recent provider additions: **Codex CLI**, **Claude Code (OAuth)**, **vLLM 0.19.0**, and a **Z.AI GLM‑5.3‑Flash** profile.
+- **New models** — **StepFun** and **MiMo** reasoning models join the recommended set (**Doubao‑Seed‑2.0‑Code**, **DeepSeek v3.2**, **Kimi 2.5**); **MiniMax** covers image/video/podcast generation plus a **music‑generation skill**, and **MiniMax Code** recently landed as a native ACP agent. Recent provider additions: **Codex CLI**, **Claude Code (OAuth)**, **vLLM 0.19.0**, and a **Z.AI GLM‑5.3‑Flash** profile; v2.1.0 added per‑agent model settings with an admission limiter.
 - **Claude Code integration** — the `claude‑to‑deerflow` skill drives a running DeerFlow instance from the terminal.
 - **IM channels** — Telegram, Slack, Discord, Feishu/Lark, WeChat, WeCom, DingTalk, and **Buzz**, including **user‑owned connections** so logged‑in users can bind their own accounts. Discord gained mention‑only mode, threads, and typing indicators; Telegram streams replies by editing a placeholder message in place.
 - **Tracing & observability** — **LangSmith**, **Langfuse**, and **Monocle** (an OpenTelemetry‑based tracer purpose‑built for agentic apps that records each run end‑to‑end — LLM calls, agent steps, and all) — all three can run together.
-- **Scheduled tasks & session goals** — a first‑class scheduled‑task MVP in the workspace lets runs trigger on a schedule, and the `/goal` command pins a session goal (with typed blockers) so the agent keeps a long task moving instead of stopping at a single answer.
+- **Scheduled tasks & session goals** — a first‑class scheduled‑task MVP in the workspace lets runs trigger on a schedule, and the `/goal` command pins a session goal (with typed blockers) so the agent keeps a long task moving instead of stopping at a single answer. v2.1.0 grew scheduled tasks up: interval schedules, cron previews, agent pinning, server-side history filtering, and durable queuing that survives restarts.
+- **Projects workspace (new in 2.1)** — group long‑running work into **Projects**, branch conversations, reference earlier conversations in new ones, edit/rerun in place, archive/pin threads, and browse a conversation outline — plus a **Capability Center** and improved Custom Agents.
 - **SkillScan safety scanner** — a deterministic scanner that blocks high‑confidence CRITICAL findings (private keys, shell execution) before the LLM‑based contextual review; gates skill installs and agent‑edited skills.
 - **Security hardening** — symlinked upload rejection, masked MCP secrets, cross‑site auth POST rejection, zip‑bomb caps on artifact previews, and restricted Docker socket mounts.
-- **Ops & deployment** — one‑line agent setup, `make doctor`, `make support‑bundle`, a **Helm chart**, and production multi‑worker mode (Postgres + Redis with lease‑based run ownership, SSE delivery, and orphan recovery). v2.0.0 also landed SQL‑level thread filters and indexed runs/messages (eliminating O(n) scans), plus cached column reflection. ⚠️ Breaking change in v2.0.0: runs hydrate from RunStore and cancellation must come from the owning worker — cross‑worker cancels now return 409.
+- **Ops & deployment** — one‑line agent setup, `make doctor`, `make support‑bundle`, a **Helm chart**, and production multi‑worker mode (Postgres + Redis with lease‑based run ownership, SSE delivery, and orphan recovery). v2.0.0 also landed SQL‑level thread filters and indexed runs/messages (eliminating O(n) scans), plus cached column reflection. v2.1.0 kept pushing: DeltaChannel checkpoints, SSE payloads cut by ~75%, a new `/health/ready` endpoint, and Kubernetes ClusterIP sandbox support. ⚠️ Breaking change in v2.0.0: runs hydrate from RunStore and cancellation must come from the owning worker — cross‑worker cancels now return 409.
 - **LLM Space** — the DeerFlow team's "secret weapon": a sister desktop app for prototyping agent ideas, inspecting every harness step, replaying failures, and benchmarking ([deer‑flow/llm‑space](https://github.com/deer-flow/llm-space)).
 - **Docs in five languages** — English, 中文, 日本語, Français, and Русский.
 - **Platform extras** — **Personal Access Tokens** for scripted/API access and **chat archiving** for long‑term run history.
@@ -75,6 +80,10 @@ Resources to go from zero to a working DeerFlow 2.0 instance on your own machine
   Detailed setup guide from the official repo covering Python env management with `uv`, Node tooling, and recommended system requirements.  
   https://github.com/bytedance/deer-flow/blob/main/docs/configuration_guide.md
 
+- **v2.1.0 Release Notes (September 24, 2026)**  
+  The trust/scale/operability milestone — **772 merged PRs from 178 contributors**: verifiable agent execution (tamper-evident receipts), durable batch subagent delegation, pluggable memory (OpenViking/mem0/Honcho), BoxLite/Tenki/OpenSandbox sandboxes, OIDC/SSO + built-in RBAC, out-of-tree extensions, and a Projects workspace. Read before upgrading: Docker now binds loopback by default, memory config moved to `memory.manager_class`, and snapshot frequency dropped from 1000 to 10.  
+  https://github.com/bytedance/deer-flow/releases/tag/v2.1.0
+
 - **v2.0.0 Release Notes (June 25, 2026)**  
   The first stable 2.0 tag — 182 merged PRs covering self‑updating custom agents, user‑owned IM integrations, new models and tools, security hardening, and performance work. Read this before upgrading from a 2.0 pre‑release (RunStore‑based run hydration is a breaking change).  
   https://github.com/bytedance/deer-flow/releases/tag/v2.0.0
@@ -105,7 +114,7 @@ How DeerFlow 2.0 actually thinks under the hood — the building blocks behind e
   Skills are Markdown‑defined, progressively loaded capabilities activated via `/skill‑name` slashes. Built‑ins include research, report generation, slides, web pages, and image/video generation — and you can author your own. Installs and agent‑edited skills run through **SkillScan**, a deterministic safety scanner that blocks high‑confidence critical findings before execution.
 
 - **Sub‑Agents**  
-  The lead agent decomposes a goal and spawns domain‑specific sub‑agents that run in parallel, each with isolated context (and its own checkpointer), then aggregates their outputs. Real‑time token usage streams back to the sub‑agent card, attributed to the dispatching step.
+  The lead agent decomposes a goal and spawns domain‑specific sub‑agents that run in parallel, each with isolated context (and its own checkpointer), then aggregates their outputs. Real‑time token usage streams back to the sub‑agent card, attributed to the dispatching step. Since v2.1.0, delegation is verifiable — tool-call receipts are recorded in a tamper‑evident ledger that subagent reports must cite — and `batch_task` scales fan-out with durable, resumable SQL-backed batches.
 
 - **Self‑Updating Custom Agents**  
   Custom agents persist edits to their own `SOUL.md` / `config.yaml` straight from a normal chat, with per‑user isolation — the agent refines its own persona and configuration over time.
@@ -120,13 +129,13 @@ How DeerFlow 2.0 actually thinks under the hood — the building blocks behind e
   Admins install shared, read‑only **skill packs** (the Lark/Feishu CLI pack is the flagship) that users connect via browser OAuth with per‑user credential isolation. A separate extension manager installs PyPI/Git/local plugins that contribute middleware, lifecycle hooks, services, and authenticated FastAPI routers.
 
 - **Long‑Term Memory & Context Engineering**  
-  Persistent memory across runs, plus summarization and tool‑call recovery so long‑horizon tasks stay coherent instead of degrading over many steps. Use the `/goal` command to pin a session goal, and `/compact` to manually trigger context compaction when a run gets long. The opt‑in **TIAMAT** cloud memory backend (April 2026) adds cross‑device memory sync.
+  Persistent memory across runs, plus summarization and tool‑call recovery so long‑horizon tasks stay coherent instead of degrading over many steps. Use the `/goal` command to pin a session goal, and `/compact` to manually trigger context compaction when a run gets long. The opt‑in **TIAMAT** cloud memory backend (April 2026) adds cross‑device memory sync, and v2.1.0 made the whole layer pluggable — swap in **OpenViking**, **mem0**, or **Honcho** via `memory.manager_class`, with FTS5/BM25 retrieval and LLM‑assisted consolidation.
 
 - **Session Goals & Scheduled Tasks**  
   `/goal <completion condition>` pins a thread‑scoped success condition that persists across turns; scheduled tasks (`/workspace/scheduled-tasks`) run agents on time‑based, recurring, or deferred triggers.
 
 - **InfoQuest & Multi‑Modal Search**  
-  ByteDance's bundled search/crawl toolset that powers DeerFlow's web research, complemented by pluggable connectors for **Tavily**, **DuckDuckGo**, **Brave Search**, **SearXNG**, **Serper** (Google Images), **Browserless**, and **Arxiv** (academic preprints). Mix providers per‑task to balance cost, privacy, and coverage.
+  ByteDance's bundled search/crawl toolset that powers DeerFlow's web research, complemented by pluggable connectors for **Tavily**, **DuckDuckGo**, **Brave Search**, **SearXNG**, **Serper** (Google Images), **Browserless**, and **Arxiv** (academic preprints) — v2.1.0 added 7+ more search providers. Mix providers per‑task to balance cost, privacy, and coverage. Knowledge search now plugs into **RAGFlow** and **LightRAG**.
 
 - **MCP Security & Authorization**  
   MCP credentials flow only through `context.secrets`, sensitive values are masked in config responses, and pluggable RBAC authorization (disabled by default) filters denied tools before the model sees them — re‑checked before every business‑tool execution. The role‑based policy design (tools, routes, models, skills, sandboxes) is spelled out in the [pluggable authorization RFC](https://github.com/bytedance/deer-flow/blob/main/docs/plans/2026-07-10-pluggable-authorization-rfc.md) (July 2026).
@@ -159,7 +168,7 @@ Patterns for running DeerFlow beyond a single laptop.
   Articles and community notes on running DeerFlow in Docker/Kubernetes — 2.0 ships a **Helm chart**, and production multi‑worker mode runs on **Postgres + Redis** with lease‑based run ownership, SSE delivery, and orphan recovery. The **Kubernetes sandbox provider** is the recommended path for scaled multi‑tenant deployments — plus wiring it into existing observability and exposing it as an internal "research API."
 
 - **Enterprise Readiness & Governance**  
-  Overviews of access control, data privacy, and human‑in‑the‑loop review for teams that want traceable, auditable research pipelines. The **pluggable authorization RFC** (July 2026) sketches role‑based policies across tools, routes, models, skills, and sandboxes for exactly these deployments.
+  Overviews of access control, data privacy, and human‑in‑the‑loop review for teams that want traceable, auditable research pipelines. The **pluggable authorization RFC** (July 2026) sketches role‑based policies across tools, routes, models, skills, and sandboxes for exactly these deployments — and v2.1.0 shipped the first cut of that design as built‑in RBAC, OIDC/SSO (Keycloak), and scoped personal access tokens.
 
 ---
 
@@ -226,7 +235,7 @@ Ecosystem pieces that make DeerFlow plug into the rest of your stack.
   https://claudemarketplaces.com/skills/bytedance/deer-flow/claude-to-deerflow
 
 - **Model Providers & Local Runtimes**  
-  Docs and guides for using open‑source models, Ollama, LM Studio, or cloud APIs. Recommended models: **Doubao‑Seed‑2.0‑Code**, **DeepSeek v3.2**, and **Kimi 2.5**, with **StepFun** and **MiMo** reasoning models also first‑class. **MiniMax** handles image/video/podcast generation plus a music‑generation skill, and **MiniMax Code** runs as a native ACP agent. Recent provider additions: **Codex CLI**, **Claude Code (OAuth)**, **vLLM 0.19.0**, and a **Z.AI GLM‑5.3‑Flash** profile.
+  Docs and guides for using open‑source models, Ollama, LM Studio, or cloud APIs. Recommended models: **Doubao‑Seed‑2.0‑Code**, **DeepSeek v3.2**, and **Kimi 2.5**, with **StepFun** and **MiMo** reasoning models also first‑class. **MiniMax** handles image/video/podcast generation plus a music‑generation skill, and **MiniMax Code** runs as a native ACP agent. Recent provider additions: **Codex CLI**, **Claude Code (OAuth)**, **vLLM 0.19.0**, and a **Z.AI GLM‑5.3‑Flash** profile; v2.1.0 added per‑agent model settings with an admission limiter.
 
 - **External Tools & MCP Servers**  
   Examples of wiring in Python execution, web scrapers, data sources, and MCP‑style servers for bespoke tools — MCP now supports OAuth flows, tool‑call timeouts, durable background tasks with leases/retries, and pluggable RBAC authorization.
@@ -319,8 +328,20 @@ Cool things people are building with — and writing about — DeerFlow.
   Curated directory profile of DeerFlow 2.0 as an MIT‑licensed multi‑agent runtime on LangGraph/LangChain, useful for comparing it against adjacent open‑source agent harnesses.  
   https://allclaw.org/entry/deerflow-2-0
 
+- **DeerFlow 2.1.0: 772‑PR milestone – AI Coder (September 2026)**  
+  News write‑up of the v2.1.0 release covering verifiable subagent delegation, pluggable memory, and the expanded sandbox lineup — a good quick digest of what changed since v2.0.0.  
+  https://aicoder.com/news/news-20260928-deer-flow-2-1-0
+
+- **DeerFlow 2.0: From Agent Framework to Super Agent Harness – Medium (Open Intelligence)**  
+  Analysis of the shift from v1's fixed graph to the 2.0 SuperAgent harness — what a "harness" actually adds over a framework, and why it matters for long‑horizon work.  
+  https://medium.com/open-intelligence/deerflow-2-0-from-agent-framework-to-super-agent-harness-e7e60e5a4180
+
+- **DeerFlow, Open‑Source Agents, and the Governance Layer – ibl.ai**  
+  Enterprise‑governance angle: what deploying a high‑privilege open‑source agent means for auditability, access control, and institutional data policies.  
+  https://ibl.ai/blog/deerflow-open-source-agents-governance-layer
+
 - **Launch write‑ups and announcement threads**  
-  Collections of X/Reddit posts, newsletters, and blog write‑ups analyzing DeerFlow's launch, strengths, and tradeoffs vs other agent frameworks. Start with the official [v2.0.0 release notes](https://github.com/bytedance/deer-flow/discussions/3795) (June 25, 2026 — 182 merged PRs, 40 contributors).
+  Collections of X/Reddit posts, newsletters, and blog write‑ups analyzing DeerFlow's launch, strengths, and tradeoffs vs other agent frameworks. Start with the official [v2.0.0 release notes](https://github.com/bytedance/deer-flow/discussions/3795) (June 25, 2026 — 182 merged PRs, 40 contributors) and the [v2.1.0 release discussion](https://github.com/bytedance/deer-flow/discussions/5832) (September 24, 2026 — 772 merged PRs, 178 contributors).
 
 - **Showcase Projects & community experiments**  
   Community repos that use DeerFlow for niche use cases like investment research, OSINT, academic literature reviews, and product discovery. The repo's [Discussions → "Show and tell"](https://github.com/bytedance/deer-flow/discussions) board is the live feed — recent standouts include a benchmark‑first comparison of DeerFlow's web‑search providers, a portable‑memory setup in three config files, and a proposal to add OpenSandbox as a community SandboxProvider.
